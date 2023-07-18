@@ -1,0 +1,111 @@
+body {
+  min-height: 100vh;
+  max-height: 100vh;
+}
+.primary-ad {
+  background-color: #fbebb5;
+}
+
+.cl-text-sb {
+  color: #000000;
+}
+.cl-text-ad {
+  color: #280559;
+}
+.rounded-bg {
+  border-radius: 20px;
+}
+.container-color {
+  background-color: #e8e9eb;
+}
+.cl-bg-ad {
+  background-color: #ffffff;
+}
+
+.mg-center {
+  margin: 0 auto;
+}
+.rounded-5 {
+  border-radius: 10px;
+}
+.input-group {
+  display: flex;
+  align-items: center;
+}
+
+.input-group-append {
+  margin-left: -40px; /* Điều chỉnh khoảng cách giữa ô input và biểu tượng */
+}
+
+.input-group-text {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
+.nav {
+  width: 190px;
+}
+
+.nav-item {
+  margin-top: 20px;
+  padding-left: 20px;
+  width: 190px;
+  border-radius: 10px;
+}
+
+.nav-item span {
+  margin-left: 5px;
+}
+.nav-item i {
+  color: #000000;
+}
+.nav-item:hover {
+  background-color: white;
+}
+
+.disable.nav-item:hover {
+  background-color: transparent;
+  
+}
+
+.nav-item:hover i {
+  color: black!important;
+}
+
+.main {
+  background-color: white;
+  width: 190px;
+  border-radius: 10px;
+}
+
+.mr-5 {
+  margin-right: 20px;
+}
+.order-detail {
+  display: table-row;
+}
+.success-message {
+  background-color: #4caf50;
+  color: #fff;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+.order-Id-Cell {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.order-status-processing {
+  color: orange;
+}
+
+.order-status-done {
+  color: green;
+}
+
+.order-status-fail {
+  color: red;
+}
