@@ -34,11 +34,7 @@ function fetchOrders() {
       tableBody.innerHTML = "";
 
       data.forEach((item) => {
-        if (
-          item.is_Order_Status === 1 ||
-          item.is_Order_Status === 2 ||
-          item.is_Order_Status === 3
-        ) {
+        if (item.is_Order_Status === 5) {
           const row = document.createElement("tr");
 
           const orderIdCell = document.createElement("td");
@@ -48,22 +44,20 @@ function fetchOrders() {
           const actionCell = document.createElement("td");
           const deleteCell = document.createElement("td");
 
-          orderIdCell.textContent = item.order_Id;
+          orderIdCell.textContent = item.order_Code;
           orderIdCell.classList.add("order-Id-Cell");
 
           dateCell.textContent = formatDateTime(item.order_Date);
           customerNameCell.textContent = item.order_Customer_Name;
           amountCell.textContent = item.order_Amount;
 
-          // Tạo phần tử nút xác nhận
           const confirmButton = document.createElement("button");
-          confirmButton.textContent = "Xác nhận";
+          confirmButton.textContent = "Confirm";
           confirmButton.classList.add("confirm-button");
           confirmButton.onclick = () => confirmOrder(item.order_Id);
 
-          // Tạo phần tử nút hủy
           const cancelButton = document.createElement("button");
-          cancelButton.textContent = "Hủy";
+          cancelButton.textContent = "Cancel";
           cancelButton.classList.add("cancel-button");
           cancelButton.onclick = () => cancelOrder(item.order_Id);
 
@@ -99,6 +93,90 @@ function fetchOrders() {
     })
     .catch((error) => {
       console.error("Error:", error);
+    });
+}
+
+function searchOrder() {
+  const searchInput = document.getElementById("search-input").value;
+  fetch(
+    "https://book0209.azurewebsites.net/api/order/searchByOrderCode?orderCode=" +
+      searchInput
+  )
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Order code doesn't exist");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      const tableBody = document.querySelector("#orderTable tbody");
+      tableBody.innerHTML = "";
+
+      if (
+        data &&
+        (data.is_Order_Status === 1 ||
+          data.is_Order_Status === 2 ||
+          data.is_Order_Status === 3 ||
+          data.is_Order_Status === 5)
+      ) {
+        const row = document.createElement("tr");
+
+        const orderIdCell = document.createElement("td");
+        const dateCell = document.createElement("td");
+        const customerNameCell = document.createElement("td");
+        const amountCell = document.createElement("td");
+        const customerPaymentCell = document.createElement("td");
+        const deleteCell = document.createElement("td");
+
+        orderIdCell.textContent = data.order_Code;
+        orderIdCell.classList.add("order-Id-Cell");
+
+        dateCell.textContent = formatDateTime(data.order_Date);
+        customerNameCell.textContent = data.order_Customer_Name;
+        amountCell.textContent = data.order_Amount;
+        customerPaymentCell.textContent = data.order_Amount;
+        if (data.is_Order_Status === 2) {
+          const deleteIcon = document.createElement("i");
+          deleteIcon.className = "fa fa-trash";
+          deleteIcon.onclick = () => deleteOrder(data.order_Id);
+          deleteCell.appendChild(deleteIcon);
+        }
+
+        orderIdCell.addEventListener("click", () => {
+          const orderId = data.order_Id;
+          openDetail(orderId);
+        });
+
+        row.appendChild(orderIdCell);
+        row.appendChild(dateCell);
+        row.appendChild(customerNameCell);
+        row.appendChild(amountCell);
+        row.appendChild(customerPaymentCell);
+        row.appendChild(deleteCell);
+
+        tableBody.appendChild(row);
+      } else {
+        const errorRow = document.createElement("tr");
+        const errorCell = document.createElement("td");
+        errorCell.textContent = `${searchInput} doesn't exist`;
+        errorCell.colSpan = 6;
+        errorCell.classList.add("error-message");
+        errorRow.appendChild(errorCell);
+        tableBody.appendChild(errorRow);
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      const tableBody = document.querySelector("#orderTable tbody");
+      tableBody.innerHTML = "";
+
+      const errorRow = document.createElement("tr");
+      const errorCell = document.createElement("td");
+      errorCell.textContent = error.message;
+      errorCell.colSpan = 6;
+      errorCell.classList.add("error-message");
+      errorRow.appendChild(errorCell);
+      tableBody.appendChild(errorRow);
     });
 }
 
@@ -149,7 +227,6 @@ function openDetail(orderId) {
   )
     .then((response) => response.json())
     .then((orderDetails) => {
-      // Hiển thị thông tin chi tiết đơn hàng
       const orderCodeElement = document.querySelector("#order-code");
       const orderDateElement = document.querySelector("#order-date");
       const orderStatusElement = document.querySelector("#order-status");
@@ -187,7 +264,6 @@ function openDetail(orderId) {
       console.error("Error:", error);
     });
 
-  // Show the modal
   const detailModal = new bootstrap.Modal(
     document.getElementById("detailModal")
   );
@@ -212,16 +288,13 @@ function confirmDelete(order_Id) {
     }
   )
     .then((response) => {
-      // Kiểm tra xem phản hồi có hợp lệ không
       if (response.ok) {
         fetchOrder();
-        // Thay thế console.log bằng mã hiển thị thông báo SweetAlert
         Swal.fire({
           icon: "success",
           title: "Deleted Successfully",
           text: "The order has been deleted successfully.",
         }).then(() => {
-          // Redirect về trang admin sau khi xóa thành công
           window.location.href = "orderlist.html";
         });
       } else {
@@ -234,6 +307,60 @@ function confirmDelete(order_Id) {
     })
     .catch((error) => {
       console.error("Error deleting order:", error);
+    });
+}
+function confirmOrder(order_Id) {
+  fetch(
+    `https://book0209.azurewebsites.net/api/order/confirmOrder?orderId=${order_Id}`,
+    {
+      method: "PATCH",
+    }
+  )
+    .then((response) => {
+      if (response.ok) {
+        fetchOrders();
+        Swal.fire({
+          icon: "success",
+          title: "Confirmed Successfully",
+          text: "The order has been confirmed successfully.",
+        });
+      } else {
+        console.error(
+          "Error confirming order:",
+          response.status,
+          response.statusText
+        );
+      }
+    })
+    .catch((error) => {
+      console.error("Error confirming order:", error);
+    });
+}
+function cancelOrder(order_Id) {
+  fetch(
+    `https://book0209.azurewebsites.net/api/order/OrderFail?orderId=${order_Id}`,
+    {
+      method: "PATCH",
+    }
+  )
+    .then((response) => {
+      if (response.ok) {
+        fetchOrders();
+        Swal.fire({
+          icon: "success",
+          title: "Cancel Successfully",
+          text: "The order has been cancel successfully.",
+        });
+      } else {
+        console.error(
+          "Error confirming order:",
+          response.status,
+          response.statusText
+        );
+      }
+    })
+    .catch((error) => {
+      console.error("Error confirming order:", error);
     });
 }
 

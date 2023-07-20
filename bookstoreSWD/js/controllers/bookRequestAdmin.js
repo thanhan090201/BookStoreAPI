@@ -209,7 +209,7 @@ async function newBookRequest() {
     icon: "success",
     title: "Add successfully",
     text: "Items have been move to importation.",
-  })
+  });
 }
 
 function getOldBookRequestForm() {
@@ -271,7 +271,7 @@ async function oldBookRequest() {
 
   const todo = await getTodo(url1);
   const data = await todo.json();
-  console.log('data: ', data);
+  console.log("data: ", data);
 
   var amount = rs1.oldBook.oldQuantity * data.book_Price;
 
@@ -317,5 +317,5 @@ async function oldBookRequest() {
     icon: "success",
     title: "Add successfully",
     text: "Items have been move to importation.",
-  })
+  });
 }

@@ -34,19 +34,14 @@ function fetchOrders() {
       tableBody.innerHTML = "";
 
       data.forEach((item) => {
-        if (
-          item.is_Order_Status === 1 ||
-          item.is_Order_Status === 2 ||
-          item.is_Order_Status === 3 ||
-          item.is_Order_Status === 5
-        ) {
+        if (item.is_Order_Status === 1) {
           const row = document.createElement("tr");
 
           const orderIdCell = document.createElement("td");
           const dateCell = document.createElement("td");
           const customerNameCell = document.createElement("td");
           const amountCell = document.createElement("td");
-          const customerPaymentCell = document.createElement("td");
+          const actionCell = document.createElement("td");
           const deleteCell = document.createElement("td");
 
           orderIdCell.textContent = item.order_Code;
@@ -55,7 +50,22 @@ function fetchOrders() {
           dateCell.textContent = formatDateTime(item.order_Date);
           customerNameCell.textContent = item.order_Customer_Name;
           amountCell.textContent = item.order_Amount;
-          customerPaymentCell.textContent = item.order_Amount;
+
+          const confirmButton = document.createElement("button");
+          confirmButton.textContent = "Confirmation successful";
+          confirmButton.classList.add("confirm-button");
+          confirmButton.onclick = () => successOrder(item.order_Id);
+
+          const cancelButton = document.createElement("button");
+          cancelButton.textContent = "Confirmation failed";
+          cancelButton.classList.add("cancel-button");
+          cancelButton.onclick = () => cancelOrder(item.order_Id);
+
+          actionCell.innerHTML = "";
+
+          actionCell.appendChild(cancelButton);
+          actionCell.appendChild(confirmButton);
+
           if (item.is_Order_Status === 2) {
             const deleteIcon = document.createElement("i");
             deleteIcon.className = "fa fa-trash";
@@ -72,7 +82,7 @@ function fetchOrders() {
           row.appendChild(dateCell);
           row.appendChild(customerNameCell);
           row.appendChild(amountCell);
-          row.appendChild(customerPaymentCell);
+          row.appendChild(actionCell);
           row.appendChild(deleteCell);
 
           tableBody.appendChild(row);
@@ -83,7 +93,6 @@ function fetchOrders() {
       console.error("Error:", error);
     });
 }
-
 function searchOrder() {
   const searchInput = document.getElementById("search-input").value;
   fetch(
@@ -184,7 +193,6 @@ function openDetail(orderId) {
       tableBody.innerHTML = "";
 
       data.forEach((item) => {
-        // Create a new table row
         const row = document.createElement("tr");
 
         const imageCell = document.createElement("td");
@@ -215,7 +223,6 @@ function openDetail(orderId) {
   )
     .then((response) => response.json())
     .then((orderDetails) => {
-      // Hiển thị thông tin chi tiết đơn hàng
       const orderCodeElement = document.querySelector("#order-code");
       const orderDateElement = document.querySelector("#order-date");
       const orderStatusElement = document.querySelector("#order-status");
@@ -234,16 +241,13 @@ function openDetail(orderId) {
         orderStatusElement.textContent = "Processing";
         orderStatusElement.classList.add("order-status-processing");
       } else if (orderDetails.is_Order_Status === 2) {
-        orderStatusElement.textContent = "Completed";
+        orderStatusElement.textContent = "Done";
         orderStatusElement.classList.add("order-status-done");
       } else if (orderDetails.is_Order_Status === 3) {
-        orderStatusElement.textContent = "Cancelled";
+        orderStatusElement.textContent = "Fail";
         orderStatusElement.classList.add("order-status-fail");
-      } else if (orderDetails.is_Order_Status === 5) {
-        orderStatusElement.textContent = "To Confirm";
-        orderStatusElement.classList.add("order-status-confirm");
       } else {
-        orderStatusElement.textContent = "Deleted";
+        orderStatusElement.textContent = "Unknown";
       }
 
       orderRecipientElement.textContent = orderDetails.order_Customer_Name;
@@ -256,7 +260,6 @@ function openDetail(orderId) {
       console.error("Error:", error);
     });
 
-  // Show the modal
   const detailModal = new bootstrap.Modal(
     document.getElementById("detailModal")
   );
@@ -281,16 +284,13 @@ function confirmDelete(order_Id) {
     }
   )
     .then((response) => {
-      // Kiểm tra xem phản hồi có hợp lệ không
       if (response.ok) {
         fetchOrder();
-        // Thay thế console.log bằng mã hiển thị thông báo SweetAlert
         Swal.fire({
           icon: "success",
           title: "Deleted Successfully",
           text: "The order has been deleted successfully.",
         }).then(() => {
-          // Redirect về trang admin sau khi xóa thành công
           window.location.href = "orderlist.html";
         });
       } else {
@@ -303,6 +303,60 @@ function confirmDelete(order_Id) {
     })
     .catch((error) => {
       console.error("Error deleting order:", error);
+    });
+}
+function successOrder(order_Id) {
+  fetch(
+    `https://book0209.azurewebsites.net/api/order/OrderSuccess?orderId=${order_Id}`,
+    {
+      method: "PATCH",
+    }
+  )
+    .then((response) => {
+      if (response.ok) {
+        fetchOrders();
+        Swal.fire({
+          icon: "success",
+          title: "Confirmed Successfully",
+          text: "The order has been confirmed successfully.",
+        });
+      } else {
+        console.error(
+          "Error confirming order:",
+          response.status,
+          response.statusText
+        );
+      }
+    })
+    .catch((error) => {
+      console.error("Error confirming order:", error);
+    });
+}
+function cancelOrder(order_Id) {
+  fetch(
+    `https://book0209.azurewebsites.net/api/order/OrderFail?orderId=${order_Id}`,
+    {
+      method: "PATCH",
+    }
+  )
+    .then((response) => {
+      if (response.ok) {
+        fetchOrders();
+        Swal.fire({
+          icon: "success",
+          title: "Cancel Successfully",
+          text: "The order has been cancel successfully.",
+        });
+      } else {
+        console.error(
+          "Error confirming order:",
+          response.status,
+          response.statusText
+        );
+      }
+    })
+    .catch((error) => {
+      console.error("Error confirming order:", error);
     });
 }
 

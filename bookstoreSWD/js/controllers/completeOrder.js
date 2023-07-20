@@ -34,19 +34,14 @@ function fetchOrders() {
       tableBody.innerHTML = "";
 
       data.forEach((item) => {
-        if (
-          item.is_Order_Status === 1 ||
-          item.is_Order_Status === 2 ||
-          item.is_Order_Status === 3 ||
-          item.is_Order_Status === 5
-        ) {
+        if (item.is_Order_Status === 2) {
           const row = document.createElement("tr");
 
           const orderIdCell = document.createElement("td");
           const dateCell = document.createElement("td");
           const customerNameCell = document.createElement("td");
           const amountCell = document.createElement("td");
-          const customerPaymentCell = document.createElement("td");
+          const actionCell = document.createElement("td");
           const deleteCell = document.createElement("td");
 
           orderIdCell.textContent = item.order_Code;
@@ -55,7 +50,12 @@ function fetchOrders() {
           dateCell.textContent = formatDateTime(item.order_Date);
           customerNameCell.textContent = item.order_Customer_Name;
           amountCell.textContent = item.order_Amount;
-          customerPaymentCell.textContent = item.order_Amount;
+
+          // Xóa nội dung của actionCell
+          actionCell.innerHTML = "";
+
+          // Thêm các phần tử nút vào actionCell
+
           if (item.is_Order_Status === 2) {
             const deleteIcon = document.createElement("i");
             deleteIcon.className = "fa fa-trash";
@@ -72,7 +72,7 @@ function fetchOrders() {
           row.appendChild(dateCell);
           row.appendChild(customerNameCell);
           row.appendChild(amountCell);
-          row.appendChild(customerPaymentCell);
+          row.appendChild(actionCell);
           row.appendChild(deleteCell);
 
           tableBody.appendChild(row);
@@ -81,90 +81,6 @@ function fetchOrders() {
     })
     .catch((error) => {
       console.error("Error:", error);
-    });
-}
-
-function searchOrder() {
-  const searchInput = document.getElementById("search-input").value;
-  fetch(
-    "https://book0209.azurewebsites.net/api/order/searchByOrderCode?orderCode=" +
-      searchInput
-  )
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Order code doesn't exist");
-      }
-      return response.json();
-    })
-    .then((data) => {
-      const tableBody = document.querySelector("#orderTable tbody");
-      tableBody.innerHTML = "";
-
-      if (
-        data &&
-        (data.is_Order_Status === 1 ||
-          data.is_Order_Status === 2 ||
-          data.is_Order_Status === 3 ||
-          data.is_Order_Status === 5)
-      ) {
-        const row = document.createElement("tr");
-
-        const orderIdCell = document.createElement("td");
-        const dateCell = document.createElement("td");
-        const customerNameCell = document.createElement("td");
-        const amountCell = document.createElement("td");
-        const customerPaymentCell = document.createElement("td");
-        const deleteCell = document.createElement("td");
-
-        orderIdCell.textContent = data.order_Code;
-        orderIdCell.classList.add("order-Id-Cell");
-
-        dateCell.textContent = formatDateTime(data.order_Date);
-        customerNameCell.textContent = data.order_Customer_Name;
-        amountCell.textContent = data.order_Amount;
-        customerPaymentCell.textContent = data.order_Amount;
-        if (data.is_Order_Status === 2) {
-          const deleteIcon = document.createElement("i");
-          deleteIcon.className = "fa fa-trash";
-          deleteIcon.onclick = () => deleteOrder(data.order_Id);
-          deleteCell.appendChild(deleteIcon);
-        }
-
-        orderIdCell.addEventListener("click", () => {
-          const orderId = data.order_Id;
-          openDetail(orderId);
-        });
-
-        row.appendChild(orderIdCell);
-        row.appendChild(dateCell);
-        row.appendChild(customerNameCell);
-        row.appendChild(amountCell);
-        row.appendChild(customerPaymentCell);
-        row.appendChild(deleteCell);
-
-        tableBody.appendChild(row);
-      } else {
-        const errorRow = document.createElement("tr");
-        const errorCell = document.createElement("td");
-        errorCell.textContent = `${searchInput} doesn't exist`;
-        errorCell.colSpan = 6;
-        errorCell.classList.add("error-message");
-        errorRow.appendChild(errorCell);
-        tableBody.appendChild(errorRow);
-      }
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-      const tableBody = document.querySelector("#orderTable tbody");
-      tableBody.innerHTML = "";
-
-      const errorRow = document.createElement("tr");
-      const errorCell = document.createElement("td");
-      errorCell.textContent = error.message;
-      errorCell.colSpan = 6;
-      errorCell.classList.add("error-message");
-      errorRow.appendChild(errorCell);
-      tableBody.appendChild(errorRow);
     });
 }
 
@@ -234,16 +150,13 @@ function openDetail(orderId) {
         orderStatusElement.textContent = "Processing";
         orderStatusElement.classList.add("order-status-processing");
       } else if (orderDetails.is_Order_Status === 2) {
-        orderStatusElement.textContent = "Completed";
+        orderStatusElement.textContent = "Done";
         orderStatusElement.classList.add("order-status-done");
       } else if (orderDetails.is_Order_Status === 3) {
-        orderStatusElement.textContent = "Cancelled";
+        orderStatusElement.textContent = "Fail";
         orderStatusElement.classList.add("order-status-fail");
-      } else if (orderDetails.is_Order_Status === 5) {
-        orderStatusElement.textContent = "To Confirm";
-        orderStatusElement.classList.add("order-status-confirm");
       } else {
-        orderStatusElement.textContent = "Deleted";
+        orderStatusElement.textContent = "Unknown";
       }
 
       orderRecipientElement.textContent = orderDetails.order_Customer_Name;
@@ -283,7 +196,7 @@ function confirmDelete(order_Id) {
     .then((response) => {
       // Kiểm tra xem phản hồi có hợp lệ không
       if (response.ok) {
-        fetchOrder();
+        fetchOrders();
         // Thay thế console.log bằng mã hiển thị thông báo SweetAlert
         Swal.fire({
           icon: "success",
