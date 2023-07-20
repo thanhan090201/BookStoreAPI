@@ -47,7 +47,6 @@ function fetchOrders() {
           const customerNameCell = document.createElement("td");
           const amountCell = document.createElement("td");
           const customerPaymentCell = document.createElement("td");
-          const deleteCell = document.createElement("td");
 
           orderIdCell.textContent = item.order_Code;
           orderIdCell.classList.add("order-Id-Cell");
@@ -56,12 +55,6 @@ function fetchOrders() {
           customerNameCell.textContent = item.order_Customer_Name;
           amountCell.textContent = item.order_Amount;
           customerPaymentCell.textContent = item.order_Amount;
-          if (item.is_Order_Status === 2) {
-            const deleteIcon = document.createElement("i");
-            deleteIcon.className = "fa fa-trash";
-            deleteIcon.onclick = () => deleteOrder(item.order_Id);
-            deleteCell.appendChild(deleteIcon);
-          }
 
           orderIdCell.addEventListener("click", () => {
             const orderId = item.order_Id;
@@ -73,7 +66,6 @@ function fetchOrders() {
           row.appendChild(customerNameCell);
           row.appendChild(amountCell);
           row.appendChild(customerPaymentCell);
-          row.appendChild(deleteCell);
 
           tableBody.appendChild(row);
         }
@@ -114,7 +106,6 @@ function searchOrder() {
         const customerNameCell = document.createElement("td");
         const amountCell = document.createElement("td");
         const customerPaymentCell = document.createElement("td");
-        const deleteCell = document.createElement("td");
 
         orderIdCell.textContent = data.order_Code;
         orderIdCell.classList.add("order-Id-Cell");
@@ -123,12 +114,6 @@ function searchOrder() {
         customerNameCell.textContent = data.order_Customer_Name;
         amountCell.textContent = data.order_Amount;
         customerPaymentCell.textContent = data.order_Amount;
-        if (data.is_Order_Status === 2) {
-          const deleteIcon = document.createElement("i");
-          deleteIcon.className = "fa fa-trash";
-          deleteIcon.onclick = () => deleteOrder(data.order_Id);
-          deleteCell.appendChild(deleteIcon);
-        }
 
         orderIdCell.addEventListener("click", () => {
           const orderId = data.order_Id;
@@ -140,7 +125,6 @@ function searchOrder() {
         row.appendChild(customerNameCell);
         row.appendChild(amountCell);
         row.appendChild(customerPaymentCell);
-        row.appendChild(deleteCell);
 
         tableBody.appendChild(row);
       } else {
@@ -227,7 +211,7 @@ function openDetail(orderId) {
       );
       const orderAmountElement = document.querySelector("#order-total-amount");
 
-      orderCodeElement.textContent = orderDetails.order_Id;
+      orderCodeElement.textContent = orderDetails.order_Code;
       orderDateElement.textContent = formatDateTime(orderDetails.order_Date);
 
       if (orderDetails.is_Order_Status === 1) {
@@ -281,16 +265,13 @@ function confirmDelete(order_Id) {
     }
   )
     .then((response) => {
-      // Kiểm tra xem phản hồi có hợp lệ không
       if (response.ok) {
-        fetchOrder();
-        // Thay thế console.log bằng mã hiển thị thông báo SweetAlert
+        fetchOrders();
         Swal.fire({
           icon: "success",
           title: "Deleted Successfully",
           text: "The order has been deleted successfully.",
         }).then(() => {
-          // Redirect về trang admin sau khi xóa thành công
           window.location.href = "orderlist.html";
         });
       } else {

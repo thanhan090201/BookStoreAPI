@@ -14,6 +14,13 @@ function init() {
 }
 
 init();
+const currentPath = window.location.pathname;
+const orderLinks = document.getElementsByClassName("order-link");
+for (const link of orderLinks) {
+  if (link.getAttribute("href") === currentPath) {
+    link.classList.add("active");
+  }
+}
 
 function formatDateTime(dateTimeString) {
   const dateTime = new Date(dateTimeString);
@@ -41,8 +48,6 @@ function fetchOrders() {
           const dateCell = document.createElement("td");
           const customerNameCell = document.createElement("td");
           const amountCell = document.createElement("td");
-          const actionCell = document.createElement("td");
-          const deleteCell = document.createElement("td");
 
           orderIdCell.textContent = item.order_Code;
           orderIdCell.classList.add("order-Id-Cell");
@@ -50,18 +55,6 @@ function fetchOrders() {
           dateCell.textContent = formatDateTime(item.order_Date);
           customerNameCell.textContent = item.order_Customer_Name;
           amountCell.textContent = item.order_Amount;
-
-          // Xóa nội dung của actionCell
-          actionCell.innerHTML = "";
-
-          // Thêm các phần tử nút vào actionCell
-
-          if (item.is_Order_Status === 2) {
-            const deleteIcon = document.createElement("i");
-            deleteIcon.className = "fa fa-trash";
-            deleteIcon.onclick = () => deleteOrder(item.order_Id);
-            deleteCell.appendChild(deleteIcon);
-          }
 
           orderIdCell.addEventListener("click", () => {
             const orderId = item.order_Id;
@@ -72,8 +65,6 @@ function fetchOrders() {
           row.appendChild(dateCell);
           row.appendChild(customerNameCell);
           row.appendChild(amountCell);
-          row.appendChild(actionCell);
-          row.appendChild(deleteCell);
 
           tableBody.appendChild(row);
         }
@@ -81,6 +72,78 @@ function fetchOrders() {
     })
     .catch((error) => {
       console.error("Error:", error);
+    });
+}
+function searchOrder() {
+  const searchInput = document.getElementById("search-input").value;
+  fetch(
+    "https://book0209.azurewebsites.net/api/order/searchByOrderCode?orderCode=" +
+      searchInput
+  )
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Order code doesn't exist");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      const tableBody = document.querySelector("#orderTable tbody");
+      tableBody.innerHTML = "";
+
+      if (
+        data &&
+        (data.is_Order_Status === 1 ||
+          data.is_Order_Status === 2 ||
+          data.is_Order_Status === 3 ||
+          data.is_Order_Status === 5)
+      ) {
+        const row = document.createElement("tr");
+
+        const orderIdCell = document.createElement("td");
+        const dateCell = document.createElement("td");
+        const customerNameCell = document.createElement("td");
+        const amountCell = document.createElement("td");
+
+        orderIdCell.textContent = data.order_Code;
+        orderIdCell.classList.add("order-Id-Cell");
+
+        dateCell.textContent = formatDateTime(data.order_Date);
+        customerNameCell.textContent = data.order_Customer_Name;
+        amountCell.textContent = data.order_Amount;
+
+        orderIdCell.addEventListener("click", () => {
+          const orderId = data.order_Id;
+          openDetail(orderId);
+        });
+
+        row.appendChild(orderIdCell);
+        row.appendChild(dateCell);
+        row.appendChild(customerNameCell);
+        row.appendChild(amountCell);
+
+        tableBody.appendChild(row);
+      } else {
+        const errorRow = document.createElement("tr");
+        const errorCell = document.createElement("td");
+        errorCell.textContent = `${searchInput} doesn't exist`;
+        errorCell.colSpan = 6;
+        errorCell.classList.add("error-message");
+        errorRow.appendChild(errorCell);
+        tableBody.appendChild(errorRow);
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      const tableBody = document.querySelector("#orderTable tbody");
+      tableBody.innerHTML = "";
+
+      const errorRow = document.createElement("tr");
+      const errorCell = document.createElement("td");
+      errorCell.textContent = error.message;
+      errorCell.colSpan = 6;
+      errorCell.classList.add("error-message");
+      errorRow.appendChild(errorCell);
+      tableBody.appendChild(errorRow);
     });
 }
 
@@ -143,7 +206,7 @@ function openDetail(orderId) {
       );
       const orderAmountElement = document.querySelector("#order-total-amount");
 
-      orderCodeElement.textContent = orderDetails.order_Id;
+      orderCodeElement.textContent = orderDetails.order_Code;
       orderDateElement.textContent = formatDateTime(orderDetails.order_Date);
 
       if (orderDetails.is_Order_Status === 1) {

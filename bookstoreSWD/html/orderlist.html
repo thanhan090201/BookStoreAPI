@@ -152,11 +152,19 @@
           <div class="container">
             <div class="cl-bg-ad rounded-bg min-vh-100">
               <div style="width: 100%" class="navbar-order">
-                <a href="/html/orderlist.html">All</a>
-                <a href="/html/confirmOrder.html">To Confirm</a>
-                <a href="/html/processingOrder.html">To Processing</a>
-                <a href="/html/completeOrder.html">Completed</a>
-                <a href="/html/cancelOrder.html">Cancelled</a>
+                <a href="/html/orderlist.html" class="order-link">All</a>
+                <a href="/html/confirmOrder.html" class="order-link"
+                  >To Confirm</a
+                >
+                <a href="/html/processingOrder.html" class="order-link"
+                  >To Processing</a
+                >
+                <a href="/html/completeOrder.html" class="order-link"
+                  >Completed</a
+                >
+                <a href="/html/cancelOrder.html" class="order-link"
+                  >Cancelled</a
+                >
               </div>
               <div class="px-4">
                 <div class="mb-3 search-bg">
@@ -230,6 +238,16 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/controllers/orderlist.js"></script>
+
+    <script>
+      const currentPath = window.location.pathname;
+      const orderLinks = document.getElementsByClassName("order-link");
+      for (const link of orderLinks) {
+        if (link.getAttribute("href") === currentPath) {
+          link.classList.add("active");
+        }
+      }
+    </script>
     <div
       class="modal fade"
       id="detailModal"

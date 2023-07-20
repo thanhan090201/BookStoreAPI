@@ -152,13 +152,53 @@
           <div class="container">
             <div class="cl-bg-ad rounded-bg min-vh-100">
               <div style="width: 100%" class="navbar-order">
-                <a href="/html/orderlist.html">All</a>
-                <a href="/html/confirmOrder.html">To Confirm</a>
-                <a href="/html/processingOrder.html">To Processing</a>
-                <a href="/html/completeOrder.html">Completed</a>
-                <a href="/html/cancelOrder.html">Cancelled</a>
+                <a href="/html/orderlist.html" class="order-link">All</a>
+                <a href="/html/confirmOrder.html" class="order-link"
+                  >To Confirm</a
+                >
+                <a href="/html/processingOrder.html" class="order-link"
+                  >To Processing</a
+                >
+                <a href="/html/completeOrder.html" class="order-link"
+                  >Completed</a
+                >
+                <a href="/html/cancelOrder.html" class="order-link"
+                  >Cancelled</a
+                >
               </div>
               <div class="px-4">
+                <div class="mb-3 search-bg">
+                  <div class="input-group px-5 pt-3">
+                    <input
+                      type="text"
+                      class="px-3 mr-5"
+                      placeholder="Enter to search for order"
+                      id="search-input"
+                      style="
+                        width: 900px;
+                        height: 40px;
+                        color: #bebfc3;
+                        border-radius: 15px;
+                        border: 2px solid #bebfc3;
+                      "
+                    />
+                    <div class="input-group-append">
+                      <button
+                        style="
+                          height: 40px;
+                          border-radius: 15px;
+                          color: black;
+                          border: 2px solid #bebfc3;
+                        "
+                        class="btn btn-outline-secondary"
+                        onclick="searchOrder()"
+                        type="button"
+                      >
+                        <i class="fa fa-search"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
                 <!-- THÔNG BÁO DELETE -->
                 <div id="successContainer"></div>
                 <table class="table table-hover mt-4" id="orderTable">
@@ -168,8 +208,6 @@
                       <th scope="col">Date</th>
                       <th scope="col">User</th>
                       <th scope="col">Payment amount</th>
-                      <th scope="col"></th>
-                      <th scope="col"></th>
                     </tr>
                   </thead>
                   <tbody></tbody>

@@ -182,19 +182,19 @@ function fetchImportation() {
     });
 }
 
-function deleteBook(importation_Id) {
+function deleteBook(import_Id) {
   const deleteModal = new bootstrap.Modal(
     document.getElementById("deleteModal")
   );
   deleteModal.show();
 
   const confirmButton = document.getElementById("confirmDeleteButton");
-  confirmButton.onclick = () => confirmDelete(importation_Id);
+  confirmButton.onclick = () => confirmDelete(import_Id);
 }
 
-function confirmDelete(importation_Id) {
+function confirmDelete(import_Id) {
   fetch(
-    `https://book0209.azurewebsites.net/api/importation/deleteImporatation?importId=${importation_Id}`,
+    `https://book0209.azurewebsites.net/api/importation/deleteImporatation?importId=${import_Id}`,
     {
       method: "PATCH",
     }
@@ -219,6 +219,36 @@ function confirmDelete(importation_Id) {
     })
     .catch((error) => {
       console.error("Error deleting order:", error);
+    });
+}
+
+function exportExcel() {
+  const month = document.getElementById("monthInput").value;
+
+  // Gọi API để tải file Excel
+  fetch(
+    `https://book0209.azurewebsites.net/api/importation/exportExcel?month=${month}`
+  )
+    .then((response) => {
+      // Xử lý phản hồi từ API và tạo file để tải về
+      return response.blob();
+    })
+    .then((blob) => {
+      // Tạo đường dẫn URL tạm thời để tải file
+      const url = window.URL.createObjectURL(blob);
+      // Tạo một thẻ a ẩn để tải file
+      const a = document.createElement("a");
+      a.style.display = "none";
+      a.href = url;
+      a.download = `export_${month}.xlsx`;
+      // Thêm thẻ a vào body và click để tải file
+      document.body.appendChild(a);
+      a.click();
+      // Xóa đường dẫn URL tạm thời sau khi tải xong
+      window.URL.revokeObjectURL(url);
+    })
+    .catch((error) => {
+      console.error("Lỗi khi tải file:", error);
     });
 }
 

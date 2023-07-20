@@ -129,6 +129,11 @@
                           id="book-image"
                           style="width: 200px; height: 300px"
                         />
+                        <!-- Thêm div để chứa các hình nhỏ -->
+                        <div
+                          id="thumbnails-container"
+                          class="d-flex flex-wrap mt-3"
+                        ></div>
                       </div>
                       <div class="col-sm-7 p-3">
                         <h2 id="book-title">Đắc nhân tâm</h2>
@@ -149,15 +154,10 @@
                           <button
                             class="btn btn-outline-dark btn-lg"
                             id="add-inventory-button"
+                            style="background-color: #fff9e5; color: black"
                             onclick="addInventory()"
                           >
                             Add to inventory
-                          </button>
-                          <button
-                            class="btn btn-lg btn-outline-dark mx-3"
-                            style="background-color: #fff9e5; color: black"
-                          >
-                            View Request
                           </button>
                         </div>
                       </div>
@@ -191,7 +191,7 @@
           style="background-color: #fbebb5; border-radius: 30px"
         >
           <div class="modal-header h5 d-flex justify-content-center">
-            Importation Book
+            Add Book To Inventory
           </div>
           <div class="modal-body justify-content-center px-5">
             <input

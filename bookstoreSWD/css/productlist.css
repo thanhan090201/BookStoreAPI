@@ -146,3 +146,7 @@ input {
   font-weight: normal;
   color: #92929d;
 }
+.thumbnail {
+  height: 70px;
+  width: 50px;
+}

@@ -44,3 +44,26 @@ async function login() {
       console.error("Error occurred during login:", error);
     });
 }
+
+function sendPasswordResetEmail() {
+  const email = document.getElementById("email").value;
+
+  const api_recoverPassword = `https://book0209.azurewebsites.net/api/user/recoverPassword?email=${encodeURIComponent(
+    email
+  )}`;
+  console.log(`${encodeURIComponent(email)}`);
+  fetch(api_recoverPassword)
+    .then((response) => {
+      if (response.status === 200) {
+        alert("Password reset email sent successfully.");
+      } else if (response.status === 400) {
+        alert("Email not found or other error.");
+      } else {
+        alert("Unexpected status code: " + response.status);
+      }
+    })
+    .catch((error) => {
+      console.error("Error sending password reset email:", error);
+      alert("Error sending password reset email. Please try again later.");
+    });
+}

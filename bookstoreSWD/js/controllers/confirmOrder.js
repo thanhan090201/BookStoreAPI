@@ -15,6 +15,14 @@ function init() {
 
 init();
 
+const currentPath = window.location.pathname;
+const orderLinks = document.getElementsByClassName("order-link");
+for (const link of orderLinks) {
+  if (link.getAttribute("href") === currentPath) {
+    link.classList.add("active");
+  }
+}
+
 function formatDateTime(dateTimeString) {
   const dateTime = new Date(dateTimeString);
   const year = dateTime.getFullYear();
@@ -125,8 +133,6 @@ function searchOrder() {
         const dateCell = document.createElement("td");
         const customerNameCell = document.createElement("td");
         const amountCell = document.createElement("td");
-        const customerPaymentCell = document.createElement("td");
-        const deleteCell = document.createElement("td");
 
         orderIdCell.textContent = data.order_Code;
         orderIdCell.classList.add("order-Id-Cell");
@@ -134,13 +140,6 @@ function searchOrder() {
         dateCell.textContent = formatDateTime(data.order_Date);
         customerNameCell.textContent = data.order_Customer_Name;
         amountCell.textContent = data.order_Amount;
-        customerPaymentCell.textContent = data.order_Amount;
-        if (data.is_Order_Status === 2) {
-          const deleteIcon = document.createElement("i");
-          deleteIcon.className = "fa fa-trash";
-          deleteIcon.onclick = () => deleteOrder(data.order_Id);
-          deleteCell.appendChild(deleteIcon);
-        }
 
         orderIdCell.addEventListener("click", () => {
           const orderId = data.order_Id;
@@ -151,8 +150,6 @@ function searchOrder() {
         row.appendChild(dateCell);
         row.appendChild(customerNameCell);
         row.appendChild(amountCell);
-        row.appendChild(customerPaymentCell);
-        row.appendChild(deleteCell);
 
         tableBody.appendChild(row);
       } else {
@@ -238,7 +235,7 @@ function openDetail(orderId) {
       );
       const orderAmountElement = document.querySelector("#order-total-amount");
 
-      orderCodeElement.textContent = orderDetails.order_Id;
+      orderCodeElement.textContent = orderDetails.order_Code;
       orderDateElement.textContent = formatDateTime(orderDetails.order_Date);
 
       if (orderDetails.is_Order_Status === 1) {

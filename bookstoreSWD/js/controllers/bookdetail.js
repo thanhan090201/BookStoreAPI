@@ -7,33 +7,70 @@ init();
 
 const urlParams = new URLSearchParams(window.location.search);
 const bookId = urlParams.get("bookId");
-function bookDetail() {
-  fetch(
-    `https://book0209.azurewebsites.net/api/book/getBookDetail?bookId=${bookId}`
+function getImagesByBookId(bookId) {
+  return fetch(
+    `https://book0209.azurewebsites.net/api/image/getImage?bookId=${bookId}`
   )
     .then((response) => response.json())
-    .then((productData) => {
-      document.getElementById("book-title").textContent =
-        productData.book_Title;
-      document.getElementById(
-        "book-price"
-      ).textContent = `đ. ${productData.book_Price}`;
-      document.getElementById("book-author").textContent =
-        productData.book_Author;
-      document.getElementById("publication-date").textContent =
-        productData.book_Year_Public;
-      document.getElementById("quantity").textContent =
-        productData.book_Quantity;
-      document.getElementById("book-description").textContent =
-        productData.book_Description;
-
-      const bookImage = document.getElementById("book-image");
-      bookImage.src = productData.image_URL;
-      bookImage.alt = productData.book_Title;
-    })
+    .then((imageData) => imageData)
     .catch((error) => {
-      console.error("Error fetching product details:", error);
+      console.error("Error fetching images:", error);
     });
+}
+
+async function bookDetail() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const bookId = urlParams.get("bookId");
+
+  try {
+    const [productData, images] = await Promise.all([
+      fetch(
+        `https://book0209.azurewebsites.net/api/book/getBookDetail?bookId=${bookId}`
+      ).then((response) => response.json()),
+      getImagesByBookId(bookId),
+    ]);
+
+    document.getElementById("book-title").textContent = productData.book_Title;
+    document.getElementById(
+      "book-price"
+    ).textContent = `đ. ${productData.book_Price}`;
+    document.getElementById("book-author").textContent =
+      productData.book_Author;
+    document.getElementById("publication-date").textContent =
+      productData.book_Year_Public;
+    document.getElementById("quantity").textContent = productData.book_Quantity;
+    document.getElementById("book-description").textContent =
+      productData.book_Description;
+
+    // Hiển thị hình lớn mặc định
+    const bookImage = document.getElementById("book-image");
+    bookImage.src = images[0].image_URL;
+    bookImage.alt = productData.book_Title;
+
+    // Hiển thị các hình nhỏ
+    const thumbnailsContainer = document.getElementById("thumbnails-container");
+    thumbnailsContainer.innerHTML = "";
+
+    images.forEach((image) => {
+      const thumbnail = document.createElement("img");
+      thumbnail.src = image.image_URL;
+      thumbnail.alt = productData.book_Title;
+
+      // Thêm các lớp CSS của Bootstrap để định dạng kích thước của hình nhỏ
+      thumbnail.classList.add("thumbnail", "img-thumbnail"); // img-thumbnail là lớp Bootstrap mặc định
+
+      thumbnail.addEventListener("click", () =>
+        showLargeImage(image.image_URL)
+      );
+      thumbnailsContainer.appendChild(thumbnail);
+    });
+  } catch (error) {
+    console.error("Error fetching product details:", error);
+  }
+}
+function showLargeImage(imageURL) {
+  const bookImage = document.getElementById("book-image");
+  bookImage.src = imageURL;
 }
 
 function addInventory() {

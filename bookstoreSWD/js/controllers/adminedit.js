@@ -44,7 +44,9 @@ function fetchBookDetails() {
       const tempBookStatus = book.is_Book_Status;
 
       // Đổ dữ liệu lên các trường nhập liệu
-      document.getElementById("image-url").src = book.image_URL;
+      const bookImage = document.getElementById("image-url");
+      // Sử dụng chỉ số 0 để lấy ảnh đầu tiên trong mảng image_URL
+      bookImage.src = book.image_URL[0];
       bookTitleInput.value = book.book_Title;
       bookAuthorInput.value = book.book_Author;
       bookDescriptionInput.value = book.book_Description;

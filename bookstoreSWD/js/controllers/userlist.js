@@ -33,7 +33,19 @@ function fetchUsers() {
             <td class="bold-column">${user.user_Account}</td>
             <td class="bold-column">${user.user_Email}</td>
             <td class="bold-column">${user.user_Phone}</td>
-            <td class="bold-column">${getUserRole(user.role_Id)}</td>
+            <td class="bold-column">
+            <select class="role-select" data-userid="${user.user_Id}">
+              <option value="1" ${
+                user.role_Id === 1 ? "selected" : ""
+              }>Admin</option>
+              <option value="2" ${
+                user.role_Id === 2 ? "selected" : ""
+              }>Staff</option>
+              <option value="3" ${
+                user.role_Id === 3 ? "selected" : ""
+              }>User</option>
+            </select>
+          </td>
             <td>
               <select class="status-select" data-userid="${user.user_Id}">
                 <option value="true" ${
@@ -65,6 +77,14 @@ function fetchUsers() {
           const userId = this.getAttribute("data-userid");
           const newStatus = this.value === "true" ? true : false;
           updateUserStatus(userId, newStatus);
+        });
+      });
+      const roleSelects = document.querySelectorAll(".role-select");
+      roleSelects.forEach((select) => {
+        select.addEventListener("change", function () {
+          const userId = this.getAttribute("data-userid");
+          const newRole = this.value;
+          updateUserRole(userId, newRole);
         });
       });
     })
@@ -103,7 +123,20 @@ function searchUser() {
           <td class="bold-column">${user.user_Account}</td>
           <td class="bold-column">${user.user_Email}</td>
           <td class="bold-column">${user.user_Phone}</td>
-          <td class="bold-column">${getUserRole(user.role_Id)}</td>
+          <td class="bold-column">
+            <select class="role-select" data-userid="${user.user_Id}">
+              <option value="1" ${
+                user.role_Id === 1 ? "selected" : ""
+              }>Admin</option>
+              <option value="2" ${
+                user.role_Id === 2 ? "selected" : ""
+              }>Staff</option>
+              <option value="3" ${
+                user.role_Id === 3 ? "selected" : ""
+              }>User</option>
+            </select>
+          </td>
+          
           <td>
             <select class="status-select" data-userid="${user.user_Id}">
               <option value="true" ${
@@ -126,6 +159,14 @@ function searchUser() {
           updateUserStatus(userId, newStatus);
         });
       });
+      const roleSelects = document.querySelectorAll(".role-select");
+      roleSelects.forEach((select) => {
+        select.addEventListener("change", function () {
+          const userId = this.getAttribute("data-userid");
+          const newRole = this.value;
+          updateUserRole(userId, newRole);
+        });
+      });
     })
     .catch((error) => {
       console.log(error);
@@ -134,12 +175,36 @@ function searchUser() {
 
       const errorRow = document.createElement("tr");
       const errorCell = document.createElement("td");
-      // errorCell.textContent = "No results found";
       errorCell.textContent = `${searchInput.value} doesn't exist`;
       errorCell.colSpan = 8;
       errorCell.classList.add("error-message");
       errorRow.appendChild(errorCell);
       tableBody.appendChild(errorRow);
+    });
+}
+
+function updateUserRole(userId, newRole) {
+  const requestData = {
+    userId: userId,
+    roleID: newRole,
+  };
+
+  fetch(
+    `https://book0209.azurewebsites.net/api/user/updateRole?userId=${userId}&roleID=${newRole}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    }
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+    })
+    .catch((error) => {
+      console.log(error);
     });
 }
 
