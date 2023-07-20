@@ -32,19 +32,19 @@ async function register() {
   const url = "https://book0209.azurewebsites.net/api/user/createUserFE";
 
   var username = document.getElementById("username").value;
-  console.log('username: ', username);
+  console.log("username: ", username);
   var password = document.getElementById("password").value;
-  console.log('password: ', password);
+  console.log("password: ", password);
   var repassword = document.getElementById("repassword").value;
-  console.log('repassword: ', repassword);
+  console.log("repassword: ", repassword);
   var name1 = document.getElementById("name").value;
-  console.log('name1: ', name1);
+  console.log("name1: ", name1);
   var email = document.getElementById("email").value;
-  console.log('email: ', email);
+  console.log("email: ", email);
   var address = document.getElementById("address").value;
-  console.log('address: ', address);
+  console.log("address: ", address);
   var phone = document.getElementById("phone").value;
-  console.log('phone: ', phone);
+  console.log("phone: ", phone);
 
   if (
     username.length == 0 ||

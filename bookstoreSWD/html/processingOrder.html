@@ -16,10 +16,13 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
     />
+
+    <link rel="stylesheet" href="/css/orderlist.css" />
     <!-- SweetAlert CSS -->
     <link
       rel="stylesheet"
@@ -29,7 +32,6 @@
     <!-- SweetAlert JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
 
-    <link rel="stylesheet" href="/css/inventory.css" />
     <title>Document</title>
   </head>
 
@@ -77,7 +79,7 @@
                   ></a
                 >
               </li>
-              <li class="main nav-item">
+              <li class="nav-item">
                 <a
                   href="/html/inventory.html"
                   class="nav-link px-0 align-middle cl-text-sb"
@@ -128,13 +130,9 @@
                   "
                 ></div>
               </li>
-              <li class="nav-item">
-                <a
-                  href="/html/orderlist.html"
-                  class="nav-link px-0 align-middle"
-                >
+              <li class="main nav-item">
+                <a href="#" class="nav-link px-0 align-middle">
                   <i class="fa-regular fa-clipboard cl-text-sb"></i>
-
                   <span class="ms-1 d-none d-sm-inline cl-text-sb"
                     >Order List</span
                   >
@@ -152,21 +150,21 @@
         </div>
         <div class="col py-3">
           <div class="container">
-            <div class="d-flex">
-              <h3 class="mt-4 cl-text-ad mb-3">Inventory</h3>
-              <a style="margin-left: 800px" href="/html/restoreinventory.html"
-                ><button style="margin-top: 20px; height: 50px; width: 50px">
-                  <i class="fa-solid fa-clock-rotate-left"></i></button
-              ></a>
-            </div>
             <div class="cl-bg-ad rounded-bg min-vh-100">
-              <div class="p-4">
+              <div style="width: 100%" class="navbar-order">
+                <a href="/html/orderlist.html">All</a>
+                <a href="/html/confirmOrder.html">To Confirm</a>
+                <a href="/html/processingOrder.html">To Processing</a>
+                <a href="/html/completeOrder.html">Completed</a>
+                <a href="/html/cancelOrder.html">Cancelled</a>
+              </div>
+              <div class="px-4">
                 <div class="mb-3 search-bg">
                   <div class="input-group px-5 pt-3">
                     <input
                       type="text"
                       class="px-3 mr-5"
-                      placeholder="Enter to search for a product"
+                      placeholder="Enter to search for order"
                       id="search-input"
                       style="
                         width: 900px;
@@ -185,7 +183,7 @@
                           border: 2px solid #bebfc3;
                         "
                         class="btn btn-outline-secondary"
-                        onclick="searchBooks()"
+                        onclick="searchOrder()"
                         type="button"
                       >
                         <i class="fa fa-search"></i>
@@ -193,32 +191,106 @@
                     </div>
                   </div>
                 </div>
-
-                <table class="table table-hover mt-4" id="bookTable">
+                <!-- THÔNG BÁO DELETE -->
+                <div id="successContainer"></div>
+                <table class="table table-hover mt-4" id="orderTable">
                   <thead>
                     <tr>
-                      <th class="table-col" scope="col">#</th>
-                      <th class="table-col" scope="col">Image</th>
-                      <th class="table-col" scope="col">Title</th>
-                      <th class="table-col" scope="col">Quantity</th>
-                      <th class="table-col" scope="col">Reason</th>
-                      <th class="table-col" scope="col">Time</th>
-                      <th class="table-col" scope="col">Stock entry person</th>
-                      <th class="table-col" scope="col"></th>
+                      <th scope="col">Order code</th>
+                      <th scope="col">Date</th>
+                      <th scope="col">User</th>
+                      <th scope="col">Payment amount</th>
+                      <th scope="col"></th>
                     </tr>
                   </thead>
-                  <tbody id="book-table-body">
-                    <!-- Dữ liệu từ API GET_BOOK sẽ được hiển thị ở đây -->
-                  </tbody>
+                  <tbody></tbody>
                 </table>
+                <div id="orderDetails" class="collapse">
+                  <h3>Order Details</h3>
+                  <table id="orderDetailsTable" class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Image</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Price</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/controllers/inventory.js"></script>
+    <script src="/js/controllers/processingOrder.js"></script>
+    <div
+      class="modal fade"
+      id="detailModal"
+      tabindex="-1"
+      aria-labelledby="deleteModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 900px">
+        <div
+          class="modal-content"
+          style="background-color: #fbebb5; border-radius: 30px"
+        >
+          <div
+            style="background-color: #fbebb5; border-radius: 15px"
+            class="card card-body"
+            id="order-detail"
+          >
+            <h6>Information</h6>
+            <div class="d-flex justify-content-between">
+              <p>Order code: <span id="order-code"></span></p>
+              <p>Date: <span id="order-date"></span></p>
+              <p>Status: <span id="order-status"></span></p>
+            </div>
+            <h6>Order:</h6>
+            <div class="container row">
+              <div class="col-sm-8">
+                <table class="table" id="order-items">
+                  <thead>
+                    <tr>
+                      <th scope="col">Image</th>
+                      <th scope="col">Title</th>
+                      <th scope="col">Quantity</th>
+                      <th scope="col">Payment amount</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                  <tfoot>
+                    <tr>
+                      <td></td>
+                      <td class="h6">Total</td>
+                      <td
+                        style="font-weight: 500"
+                        id="order-total-quantity"
+                      ></td>
+                      <td style="font-weight: 500" id="order-total-amount"></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+              <div class="col-sm-4">
+                <h6 style="font-weight: bold">Address</h6>
+                <p>Recipient: <span id="order-recipient"></span></p>
+                <p>Phone: <span id="order-phone"></span></p>
+                <p>Address: <span id="order-address"></span></p>
+                <h6>Payment method:</h6>
+                <p style="font-weight: 500" id="order-payment-method">COD</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div
       class="modal fade"
       id="deleteModal"

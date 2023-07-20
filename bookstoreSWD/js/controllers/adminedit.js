@@ -15,13 +15,11 @@ const bookYearPublicInput = document.getElementById("book-year-public");
 function init() {
   const data = localStorage.getItem("user");
   const user = JSON.parse(data);
-  console.log('user: ', user);
+  console.log("user: ", user);
 
-  if(user.role_Id == 1) {
+  if (user.role_Id == 1) {
     document.getElementById("censored").style.bottom = null;
-    document.getElementById("disable").classList.remove('disable');
-
-    
+    document.getElementById("disable").classList.remove("disable");
   }
 
   if (user.role_Id == 2) {
@@ -72,7 +70,6 @@ function fetchBookDetails() {
     });
 }
 
-// Gửi request cập nhật sách lên API
 function updateBook(
   tempBookId,
   tempCategoryId,
@@ -96,6 +93,28 @@ function updateBook(
     is_Book_Status: tempBookStatus,
   };
 
+  // Kiểm tra các trường hợp lỗi
+  if (isNaN(updatedBook.book_Price) || updatedBook.book_Price <= 0) {
+    alert("Please enter a valid book price.");
+    return;
+  }
+
+  if (isNaN(updatedBook.book_Quantity) || updatedBook.book_Quantity <= 0) {
+    alert("Please enter a valid book quantity.");
+    return;
+  }
+
+  if (
+    isNaN(updatedBook.book_Year_Public) ||
+    updatedBook.book_Year_Public <= 0 ||
+    updatedBook.book_Year_Public > 2023
+  ) {
+    // Năm xuất bản không hợp lệ
+    alert("Please enter a valid publication year");
+    return;
+  }
+
+  // Gửi yêu cầu cập nhật sách lên API
   fetch(`https://book0209.azurewebsites.net/api/book/updateBook`, {
     method: "PUT",
     headers: {
@@ -104,11 +123,13 @@ function updateBook(
     body: JSON.stringify(updatedBook),
   })
     .then((response) => {
-      // Kiểm tra xem phản hồi có hợp lệ không
       if (response.ok) {
-        console.log("Book updated successfully.");
-        window.location.href = "productlist.html";
-        // Hiển thị thông báo cập nhật thành công, hoặc thực hiện các hành động khác sau khi cập nhật
+        Swal.fire({
+          icon: "success",
+          title: "Update Successfully",
+        }).then(() => {
+          window.location.href = "productlist.html";
+        });
       } else {
         console.error(
           "Error updating book:",
@@ -122,9 +143,7 @@ function updateBook(
     });
 }
 
-// Gửi request xóa sách lên API
 function deleteBook() {
-  // Hiển thị modal xác nhận xóa
   const deleteModal = new bootstrap.Modal(
     document.getElementById("deleteModal")
   );
@@ -140,24 +159,25 @@ function confirmDelete() {
     }
   )
     .then((response) => {
-      // Kiểm tra xem phản hồi có hợp lệ không
       if (response.ok) {
-        console.log("Book deleted successfully.");
-        // Redirect về trang admin sau khi xóa thành công
-        window.location.href = "productlist.html";
+        Swal.fire({
+          icon: "success",
+          title: "Deleted Successfully",
+          text: "The book has been deleted successfully.",
+        }).then(() => {
+          window.location.href = "productlist.html";
+        });
       } else {
         console.error(
-          "Error deleting book:",
+          "Error deleting order:",
           response.status,
           response.statusText
         );
       }
     })
     .catch((error) => {
-      console.error("Error deleting book:", error);
+      console.error("Error deleting order:", error);
     });
 }
-
-// Fetch book details when the page loads
 
 fetchBookDetails();

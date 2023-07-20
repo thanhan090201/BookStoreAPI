@@ -308,12 +308,11 @@ async function tickInvent() {
     .catch(function (err) {
       console.log("err: ", err);
     });
-    Swal.fire({
-      icon: "success",
-      title: "Add successfully",
-      text: "Items have been move to importation.",
-    })
-
+  Swal.fire({
+    icon: "success",
+    title: "Add successfully",
+    text: "Items have been move to importation.",
+  });
 }
 
 async function addInvent() {
