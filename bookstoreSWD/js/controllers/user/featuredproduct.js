@@ -1,7 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
     let products = document.querySelector(".pro-container");
-    let currentPage = 1;
-    const productsPerPage = 15;
     let bookData = [];
 
     async function fetchBookData(url) {
@@ -9,8 +7,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const response = await fetch(url);
             bookData = await response.json();
             console.log(bookData);
-            renderBooks(bookData);
-            renderPagination();
+            renderBooks(bookData.slice(0, 4)); // Display only the first 4 products
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -20,12 +17,8 @@ document.addEventListener("DOMContentLoaded", function() {
         // Clear existing products
         products.innerHTML = "";
 
-        // Calculate start and end index based on current page and products per page
-        const startIndex = (currentPage - 1) * productsPerPage;
-        const endIndex = startIndex + productsPerPage;
-
         // Loop through the data and create product elements
-        for (let i = startIndex; i < endIndex && i < data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
             const book = data[i];
             const productId = book.book_Id;
 
@@ -62,19 +55,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
             const price = document.createElement("h4");
             price.classList.add("bookPrice");
-            price.textContent = `${book.book_Price} đ`;
+            price.textContent = `VND ${book.book_Price}`;
 
             const cartBtn = document.createElement("button");
             const cartIcon = document.createElement("i");
-            // cartIcon.classList.add("fal", "fa-shopping-cart", "cart");
-            // cartBtn.appendChild(cartIcon);
+            cartIcon.classList.add("fal", "fa-shopping-cart", "cart");
+            cartBtn.appendChild(cartIcon);
             cartBtn.addEventListener("click", function() {
                 handleCart(book);
             });
 
             des.appendChild(category);
             des.appendChild(title);
-            // des.appendChild(star);
+            des.appendChild(star);
             des.appendChild(price);
 
             product.appendChild(image);
@@ -85,54 +78,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    function renderPagination() {
-        const paginationContainer = document.querySelector(".pagination-container");
-        const paginationPages = document.querySelector(".pagination-pages");
-        paginationPages.innerHTML = "";
-
-        const totalPages = Math.ceil(bookData.length / productsPerPage);
-
-        for (let i = 1; i <= totalPages; i++) {
-            const paginationItem = document.createElement("span");
-            paginationItem.textContent = i;
-            paginationItem.classList.add("pagination-item");
-            if (i === currentPage) {
-                paginationItem.classList.add("active");
-            }
-            paginationItem.addEventListener("click", function() {
-                currentPage = i;
-                renderBooks(bookData);
-                renderPagination();
-                updatePaginationButtonState();
-            });
-            paginationPages.appendChild(paginationItem);
-        }
-
-        // Add next page button
-        const nextPageButton = document.querySelector(".next-page");
-        nextPageButton.disabled = currentPage === totalPages;
-        nextPageButton.addEventListener("click", function() {
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderBooks(bookData);
-                renderPagination();
-                updatePaginationButtonState();
-            }
-        });
-
-        // Add previous page button
-        const prevPageButton = document.querySelector(".prev-page");
-        prevPageButton.disabled = currentPage === 1;
-        prevPageButton.addEventListener("click", function() {
-            if (currentPage > 1) {
-                currentPage--;
-                renderBooks(bookData);
-                renderPagination();
-                updatePaginationButtonState();
-            }
-        });
-    }
-
     function addOnclickRedirectToProduct(element, productId) {
         element.addEventListener("click", function() {
             redirectToProduct(productId);
@@ -140,17 +85,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function redirectToProduct(productId) {
-        window.open(`sproduct.html?productId=${productId}`, "_blank") ||
-            window.location.replace(`sproduct.html?productId=${productId}`);
-    }
-
-
-    function updatePaginationButtonState() {
-        const prevPageButton = document.querySelector(".prev-page");
-        const nextPageButton = document.querySelector(".next-page");
-
-        prevPageButton.disabled = currentPage === 1;
-        nextPageButton.disabled = currentPage === totalPages;
+        window.location.href = `sproduct.html?productId=${productId}`
     }
 
     fetchBookData("https://book0209.azurewebsites.net/api/book/getBook");

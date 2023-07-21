@@ -29,7 +29,7 @@ let displayOrderDetail = () => {
         </div>
       </div>
       <span class="text-small">
-        Rs. ${item.quantity * item.book_Price}
+        VND. ${item.quantity * item.book_Price}
       </span>
     </div>
     `;
@@ -41,13 +41,40 @@ let displayOrderDetail = () => {
 let displayTotalPrice = () => {
   let displayTotalPaymentTemplate = `
     <span>Total payment</span>
-    <span class="payment-price">Rs.${totalPrice}</span>
+    <span class="payment-price">VND.${totalPrice}</span>
   `;
   document.getElementById("total-payment").innerHTML =
     displayTotalPaymentTemplate;
 };
 
+function validateForm() {
+  let fullName = document.getElementById("fullName").value;
+  let address = document.getElementById("address").value;
+  let phone = document.getElementById("phone").value;
+
+  if (!fullName) {
+    alert("Please enter your full name.");
+    return false;
+  }
+
+  if (!address) {
+    alert("Please enter your address.");
+    return false;
+  }
+
+  if (!phone) {
+    alert("Please enter your phone number.");
+    return false;
+  }
+
+  return true;
+}
+
 async function checkout() {
+  if (!validateForm()) {
+    return;
+  }
+
   let fullName = document.getElementById("fullName").value;
   let address = document.getElementById("address").value;
   let phone = document.getElementById("phone").value;
@@ -60,6 +87,7 @@ async function checkout() {
     order_Date: new Date().toISOString(),
     order_Quantity: cart.reduce((acc, item) => acc + Number(item.quantity), 0),
     order_Amount: totalPrice,
+    order_Code: "abc",
   };
 
   await fetch("https://book0209.azurewebsites.net/api/order/createOrder", {
@@ -101,6 +129,7 @@ async function checkout() {
       order_Detail_Quantity: item.book_Quantity,
       order_Detail_Amount: item.quantity * item.book_Price,
       order_Detail_Price: item.book_Price,
+      order_Code: "abc",
     };
   });
   for (let orderDetail of orderDetailData) {

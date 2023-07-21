@@ -348,6 +348,114 @@ body {
     background-color: #fff2e5;
 }
 
+#product1 .heading,
+#bestSeller .heading {
+    font-size: 3.5rem;
+    color: #130f40;
+    padding-bottom: 2rem;
+    text-align: center;
+}
+
+#product1 .heading span,
+#bestSeller .heading span {
+    color: #eb4d4b;
+}
+
+#product1 .pro-container,
+#bestSeller .pro-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    justify-content: space-between;
+    padding-top: 20px;
+}
+
+#product1 .pro,
+#bestSeller .pro {
+    width: 23%;
+    min-width: 250px;
+    padding: 10px 12px;
+    border: 1px solid #cce7d0;
+    border-radius: 25px;
+    transition: .2s;
+    position: relative;
+    cursor: pointer;
+    box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.02);
+    margin: 15px 0;
+}
+
+#product1 .pro:hover,
+#bestSeller .pro:hover {
+    box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.06);
+}
+
+#product1 .pro img,
+#bestSeller .pro img {
+    width: 100%;
+    border-radius: 20px;
+}
+
+#product1 .pro .des,
+#bestSeller .pro .des {
+    text-align: start;
+    padding: 10px 0;
+}
+
+#product1 .pro .des span,
+#bestSeller .pro .des span {
+    color: #606063;
+    font-size: 12px;
+}
+
+#product1 .pro .des h5,
+#bestSeller .pro .des h5 {
+    padding-top: 7px;
+    color: #1a1a1a;
+    font-size: 1px;
+    transition: 0.2s;
+}
+
+#product1 .pro:hover .des h5,
+#bestSeller .pro:hover .des h5 {
+    color: #088178;
+}
+
+#product1 .pro .des i,
+#bestSeller .pro .des i {
+    color: rgb(240, 177, 18);
+    font-size: 12px;
+}
+
+#product1 .pro .des h4,
+#bestSeller .pro .des h4 {
+    padding-top: 7px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #088178;
+}
+
+#product1 .pro .cart,
+#bestSeller .pro .cart {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 50px;
+    background-color: #e8f6ea;
+    font-weight: 500;
+    color: #088178;
+    border: 1px solid #cce7d0;
+    transition: 0.2s;
+    position: absolute;
+    bottom: 20px;
+    right: 10px;
+}
+
+#product1 .pro .cart:hover,
+#bestSeller .pro .cart:hover {
+    color: #fff;
+    background: #088178;
+    font-weight: 400;
+}
+
 #product1,
 #product2 {
     text-align: center;

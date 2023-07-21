@@ -44,7 +44,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link px-0 align-middle">
+                            <a href="/html/importation.html" class="nav-link px-0 align-middle">
                                 <i class="fa-sharp fa-solid fa-file-import cl-text-sb"></i>
                                 <span class="ms-1 d-none d-sm-inline cl-text-sb">Importation</span></a>
                         </li>
@@ -185,6 +185,39 @@
         </div>
     </div>
 
+    <!-- The Modal2 -->
+    <div class="modal fade" id="myModal2">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <h3>Are you sure you want to delete?</h3>
+                    <div class="d-flex" style="margin-left: 300px; margin-top: 50px;">
+                        <button type="button" data-dismiss="modal" style="margin-right: 20px;">Cancel</button>
+                        <button onclick="deleteRequest()" class="btn btn-danger" data-dismiss="modal">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Modal3 -->
+    <div class="modal fade" id="myModal3">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <h3>Why do you want to cancel the request?</h3>
+                    <textarea id="noteRequest" cols="40" rows="10"></textarea>
+
+                    <div class="d-flex" style="margin-left: 300px; margin-top: 50px;">
+                        <button type="button" data-dismiss="modal" style="margin-right: 20px;">Cancel</button>
+                        <button onclick="noteRequest()" class="btn btn-danger" data-dismiss="modal" style="width: 180px;">Cancel request</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"

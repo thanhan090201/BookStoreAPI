@@ -1,53 +1,26 @@
 document.addEventListener("DOMContentLoaded", function() {
-    let products = document.querySelector(".pro-container");
-    let categorySelect = document.querySelector("#category-select");
-    let bookList = [];
+    let products = document.querySelector("#bestSeller .pro-container");
+    let bookData = [];
 
-    async function fetchBookData(url) {
+    async function fetchBestSellers(url) {
         try {
             const response = await fetch(url);
-            const bookData = await response.json();
+            const jsonData = await response.json();
+            bookData = jsonData.filter(book => book.category_Name === "Novel");
             console.log(bookData);
-            bookList = bookData;
-            renderBooks(bookData);
+            renderBestSellers(bookData.slice(0, 4)); // Display only the first 4 best sellers in the Truyện tranh category
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     }
 
-    async function fetchCategory(url) {
-        try {
-            const response = await fetch(url);
-            const categoryData = await response.json();
-            console.log(categoryData);
-            for (let i = 0; i < categoryData.length; i++) {
-                const category = categoryData[i];
-                categorySelect.innerHTML += `
-            <option value="${category.category_Id}">
-                ${category.category_Name}
-            </option>
-          `;
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    }
+    function renderBestSellers(data) {
+        // Clear existing products
+        products.innerHTML = "";
 
-    categorySelect.addEventListener("change", function() {
-        const categoryId = categorySelect.value;
-        if (categoryId === "all") {
-            renderBooks(bookList);
-        } else {
-            const filteredBooks = bookList.filter(book => book.category_Id == categoryId);
-            renderBooks(filteredBooks);
-        }
-    });
-
-    function renderBooks(books) {
-        products.innerHTML = ""; // Clear the existing products
-
-        for (let i = 0; i < books.length; i++) {
-            const book = books[i];
+        // Loop through the data and create product elements
+        for (let i = 0; i < data.length; i++) {
+            const book = data[i];
             const productId = book.book_Id;
 
             const product = document.createElement("div");
@@ -83,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             const price = document.createElement("h4");
             price.classList.add("bookPrice");
-            price.textContent = `VND${book.book_Price}`;
+            price.textContent = `$${book.book_Price}`;
 
             const cartBtn = document.createElement("button");
             const cartIcon = document.createElement("i");
@@ -113,9 +86,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function redirectToProduct(productId) {
-        window.location.href = `sproduct.html?productId=${productId}`
+        window.location.href = `sproduct.html?productId=${productId}`;
     }
-
-    fetchBookData("https://book0209.azurewebsites.net/api/book/getBook");
-    fetchCategory("https://book0209.azurewebsites.net/api/category/getCategory");
+    fetchBestSellers("https://book0209.azurewebsites.net/api/book/getBook");
 });

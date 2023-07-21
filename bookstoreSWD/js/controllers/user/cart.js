@@ -31,11 +31,14 @@ document.addEventListener("DOMContentLoaded", function() {
             </td>
                 <td>${book.book_Title}</td>
             <td>${book.book_Price}</td>
-            <td><button class="addBtn">
-            <i class="fa fa-plus"></i>
-        </button>${book.quantity}<button class="subtractBtn">
-        <i class="fa fa-minus"></i>
-    </button></td>
+            <td>
+                <button class="subtractBtn">
+                    <i class="fa fa-minus"></i>
+                </button>
+                ${book.quantity}
+                <button class="addBtn">
+                    <i class="fa fa-plus"></i>
+                </button></td>
             <td>${book.book_Price * book.quantity}</td>
             <td>
                 <button class="removeBtn">
