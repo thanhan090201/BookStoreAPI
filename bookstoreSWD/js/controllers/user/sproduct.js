@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
       mainImg.src = book.image_URL[0];
       smallImg.src = book.image_URL[1];
       bookTitle.textContent = book.book_Title;
-      bookPrice.textContent = `$${book.book_Price}`;
+      bookPrice.textContent = `VND ${book.book_Price}`;
       bookDetail.textContent = book.book_Description;
     } catch (error) {
       console.error("Error fetching data:", error);

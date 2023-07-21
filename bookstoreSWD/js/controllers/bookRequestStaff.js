@@ -35,18 +35,18 @@ async function renderTable() {
   for (var i = 0; i < data.length; i++) {
     var currentRequestBook = data[i];
 
-    var contentTr = `<tr> 
+    if (currentRequestBook.is_Request_Status > 0) {
+      var contentTr = `<tr> 
         <td>
             ${
-              currentRequestBook.is_Request_Status === 2
-                ? ""
-                : `<input
+              currentRequestBook.is_Request_Status === 1 && currentRequestBook.is_RequestBook_Status === false
+                ? `<input
                 type="checkbox"
                 class="myCheckbox"
                 value='${currentRequestBook.request_Id}'
               />`
+                : ""
             }
-        
         </td>
         <td><img class="bookImg img-fluid" src="${
           currentRequestBook.request_Image_Url
@@ -56,7 +56,7 @@ async function renderTable() {
         <td>${currentRequestBook.request_Price}</td>
         <td>${currentRequestBook.request_Note}</td>
         <td>${formatDate(currentRequestBook.request_Date)}</td>
-        <td>${currentRequestBook.request_Date_Done}</td>
+        <td>${formatDate(currentRequestBook.request_Date_Done)}</td>
         <td>${
           currentRequestBook.is_Request_Status === 1
             ? "<p style='color: #f0b01d;'>Processing</p>"
@@ -65,18 +65,21 @@ async function renderTable() {
             : "<p style='color: red'>Undone</p>"
         }</td>
         <td>${
-          currentRequestBook.is_RequestBook_Status === true
+          currentRequestBook.is_RequestBook_Status === true && currentRequestBook.is_Request_Status === 1
             ? `<i onclick='getBook("${currentRequestBook.request_Id}")' class='fa-solid fa-circle-plus'></i>`
             : ""
         }</td>
-        <td>${
-          currentRequestBook.is_Request_Status === 2
-            ? "<i class='fa-solid fa-trash-can'></i>"
-            : ""
-        }</td>
+        <td>
+        ${
+          currentRequestBook.is_Request_Status === 1 
+          ? `<i onclick='getRequestNote("${currentRequestBook.request_Id}")' class='fa-solid fa-triangle-exclamation'></i>`
+          : ""
+        }
+      </td>
         </tr>
         `;
-    contentHTML = contentHTML + contentTr;
+      contentHTML = contentHTML + contentTr;
+    }
   }
   document.getElementById("book-table-body").innerHTML = contentHTML;
 }
@@ -304,15 +307,18 @@ async function tickInvent() {
           }),
         });
       }
+      
+      Swal.fire({
+        icon: "success",
+        title: "Add successfully",
+        text: "Items have been move to importation.",
+      });
+      renderTable();
     })
     .catch(function (err) {
       console.log("err: ", err);
     });
-  Swal.fire({
-    icon: "success",
-    title: "Add successfully",
-    text: "Items have been move to importation.",
-  });
+    renderTable();
 }
 
 async function addInvent() {
@@ -368,16 +374,6 @@ async function addInvent() {
   console.log(requests);
   console.log(requests[0]);
 
-  // var importationAmount = requests.reduce((value, item) => {
-  //   console.log('item.request_Amount: ', item.request_Amount);
-  //   return (value += item.request_Amount);
-  // }, 0);
-  // console.log("importationAmount: ", importationAmount);
-
-  // var importationQuantity = requests.reduce((value, item) => {
-  //   return (value += item.request_Quantity);
-  // }, 0);
-  // console.log("importationQuantity: ", importationQuantity);
   var importationAmount = 0;
   var importationQuantity = 0;
 
@@ -417,4 +413,41 @@ async function addInvent() {
     });
 }
 
-// Thực hiện tạo importation
+function getRequestNote(id) {
+  var modal = document.getElementById("myModal3");
+
+  $(modal).modal("show");
+
+  console.log(id);
+
+  localStorage.setItem("id3", JSON.stringify(id));
+}
+
+async function noteRequest() {
+  const data = localStorage.getItem("id3");
+  const requestId = JSON.parse(data);
+  console.log("requestId: ", requestId);
+
+  var note =document.getElementById("noteRequest").value
+
+  const url =
+    `https://book0209.azurewebsites.net/api/request/updateUnDoneRequest?requestId=${requestId}&note=${note}`;
+
+  fetch(url, {
+    method: "PATCH",
+    headers: { "Content-type": "application/json" },
+    body: JSON.stringify({
+      request_Id: requestId,
+      note: note
+    }),
+  }).then((res) => {
+    renderTable();
+  });
+  Swal.fire({
+    icon: "success",
+    title: "Delete successfully",
+  });
+}
+
+
+

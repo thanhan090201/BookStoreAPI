@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const price = document.createElement('h4');
                 price.classList.add('bookPrice');
-                price.textContent = `$${product.book_Price}`;
+                price.textContent = `VND ${product.book_Price}`;
 
                 const cartLink = document.createElement('a');
                 cartLink.href = '#';
